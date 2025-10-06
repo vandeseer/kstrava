@@ -1,26 +1,21 @@
 # README
 
-Mostly following instructions from Strava API docs:
-https://developers.strava.com/docs/
+## TLDR
 
-To generate the API client, install swagger-codegen v2:
-```
-brew install swagger-codegen@2
-```
+A simple, hacky script plus MVP to generate and (locally) install a Strava API client 
+library for Kotlin (which should at least work on Mac 😅).
 
-Ensure you have Java 11 or 17 installed (not 21, which is not supported by swagger-codegen v2).
-Don't use gradle > 8, which requires Java 21.
+## How To
 
-With SDKMAN, you can do:
+To generate the API client, install OpenAPI Generator and jq, e.g. via Homebrew:
 ```
-sdk install gradle 8.14.3
-sdk use java 11.0.27-zulu # Or any Java < 21 JDK
+brew install openapi-generator jq
 ```
 
 Then simply run:
 
 ```
-./generate.sh
+./generate_and_install.sh
 ```
 
 If everything works, you should be able to import the library in your IDE by its coordinates:
@@ -32,3 +27,10 @@ version: 1.0.0
 
 To run the sample app, set up a Strava API application to get your client ID and secret:
 https://www.strava.com/settings/api
+
+Then get the authorization code by visiting the following URL in your browser (replace `client_id` and `redirect_uri` as appropriate):
+https://www.strava.com/oauth/authorize?client_id=12345&redirect_uri=http://localhost:8000&response_type=code&scope=profile:read_all,activity:read_all
+
+Fill in `client_id`, `client_secret`, and `code` in `access.json`, then run `Main.kt`.
+
+The file `Main.kt` shows a simple example of retrieving some of your own activities.

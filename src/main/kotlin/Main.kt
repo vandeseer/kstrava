@@ -1,14 +1,67 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-fun main() {
-    val name = "Kotlin"
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    println("Hello, " + name + "!")
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.strava.api.v3.api.ActivitiesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import java.nio.file.Files
+import kotlin.io.path.Path
 
-    for (i in 1..5) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        println("i = $i")
+fun main() {
+
+    val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+        encodeDefaults = true
+    }
+
+    fun okHttp(accessTokenProvider: () -> String) = OkHttpClient.Builder()
+        .addInterceptor(Interceptor { chain ->
+            val req = chain.request().newBuilder()
+                .header("Authorization", "Bearer ${accessTokenProvider()}")
+                .build()
+            chain.proceed(req)
+        })
+        .addInterceptor(HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BASIC
+        })
+        .build()
+
+    fun retrofitApi(accessTokenProvider: () -> String): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://www.strava.com/api/v3/")
+            .client(okHttp(accessTokenProvider))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+
+    fun retrofitAuth(): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://www.strava.com/")
+            .client(OkHttpClient())
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+
+    val accessData = json.decodeFromString<AccessData>(
+        Files.readString(Path("access.json"))
+    )
+
+    val token = runBlocking {
+        retrofitAuth().create(StravaAuthApi::class.java).exchangeToken(
+            accessData.client_id,
+            accessData.client_secret,
+            accessData.code
+        )
+    }
+
+    val activitiesApi = retrofitApi { token.access_token }.create(ActivitiesApi::class.java)
+
+    runBlocking {
+        val listResponse = activitiesApi.getLoggedInAthleteActivities(perPage = 5)
+        listResponse.body()!!.forEach {
+            println("${it.name} (${it.type})")
+        }
     }
 }
