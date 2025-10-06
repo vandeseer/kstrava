@@ -2,8 +2,11 @@
 
 ## TLDR
 
-A simple, hacky script plus MVP to generate and (locally) install a Strava API client 
-library for Kotlin (which should at least work on Mac 😅).
+A simple, hacky script to generate and install a Strava API client 
+library for Kotlin into your local Maven repo. Batteries included – 
+a sample file shows a minimal working solution. 
+
+(This stuff should at least work on Mac 😅)
 
 ## How To
 
