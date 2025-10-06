@@ -23,9 +23,9 @@ Then simply run:
 
 If everything works, you should be able to import the library in your IDE by its coordinates:
 ```
-groupId: com.strava
-artifactId: strava-api-client
-version: 1.0.0
+groupId: com.strava.api
+artifactId: kstrava
+version: 3.0.0
 ```
 
 To run the sample app, set up a Strava API application to get your client ID and secret:
