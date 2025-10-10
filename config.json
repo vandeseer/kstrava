@@ -1,7 +1,7 @@
 {
   "groupId": "com.strava.api",
   "artifactId": "kstrava",
-  "artifactVersion": "3.0.0",
+  "artifactVersion": "3.0.2",
   "apiPackage": "com.strava.api.v3.api",
   "invokerPackage": "com.strava.api.v3",
   "modelPackage": "com.strava.api.v3.model"

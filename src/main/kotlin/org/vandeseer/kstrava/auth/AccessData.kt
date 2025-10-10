@@ -1,3 +1,5 @@
+package org.vandeseer.kstrava.auth
+
 import kotlinx.serialization.Serializable
 
 @Serializable
