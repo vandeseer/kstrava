@@ -30,23 +30,6 @@ echo "📋 Copying custom files for auth flow..."
 mkdir -p generated/kotlin/src/main/kotlin/org/vandeseer/kstrava/auth
 cp -r -v src/main/kotlin/org/vandeseer/kstrava/auth/* generated/kotlin/src/main/kotlin/org/vandeseer/kstrava/auth
 
-# --- Update Gradle file to include maven publish plugin ---------------
-if [[ -f "$GRADLE_FILE" ]]; then
-  cat >> $GRADLE_FILE <<KOTLIN
-
-publishing {
-  publications {
-    maven(MavenPublication) {
-      from components.java
-      artifactId = '$ARTIFACT_ID'
-    }
-  }
-}
-KOTLIN
-else
-  echo "⚠️  Gradle file not found at $GRADLE_FILE (adjust path if needed)"
-fi
-
 # --- Update Gradle file to include dependency ----------------------------
 ## Note: This is a extremely hacky, but it works for now (at least on macOS)
 ## For Linux (GNU sed), remove the '' after -i

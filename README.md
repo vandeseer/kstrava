@@ -25,7 +25,7 @@ If everything works, you should be able to import the library in your IDE by its
 ```
 groupId: com.strava.api
 artifactId: kstrava
-version: 3.0.0
+version: 3.0.3
 ```
 
 To run the sample app, set up a Strava API application to get your client ID and secret:
